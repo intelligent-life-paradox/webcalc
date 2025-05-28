@@ -1,46 +1,30 @@
-
-#### **Mudanças realizadas:**
-- Corrigida a formatação do Markdown (títulos, listas, blocos de código).
-- Ajustada a sintaxe do `pyproject.toml` (aspas corretas).
-- Corrigido o comando `git push` para incluir a branch correta (`master` ou `main`, dependendo do repositório).
-- Adicionado um aviso sobre o uso de `main` em vez de `master`, se aplicável.
-
----
-
-### 2. **Proposta de `webcalc-ci.yml` funcional**
-Como o arquivo `.yml` de GitHub Actions que está dando erro não foi fornecido, vou propor um exemplo básico e funcional para o seu caso (execução de testes com Poetry e verificação de dependências). O erro no commit pode ser causado por sintaxe inválida no `.yml` (como indentação errada ou comandos incorretos). Aqui está um exemplo corrigido:
-
-```yaml
-name: CI for webcalc
-
+name: WebCalcCI
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
       with:
-        python-version: '3.11'  # Ajuste para a versão usada no seu projeto
-
-    - name: Install Poetry
+        python-version: "3.10"
+    - name: Install Dependencies
       run: |
-        curl -sSL https://install.python-poetry.org | python -
-        echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-    - name: Install dependencies
-      run: poetry install
-
-    - name: Run tests
-      run: poetry run python -m unittest discover tests
+        python -m pip install --upgrade pip
+        pip install poetry
+    - name: Install Package
+      run: |
+        poetry install
+    - name: Test with Unittest
+      run: |
+        poetry run python -u -m unittest discover tests
